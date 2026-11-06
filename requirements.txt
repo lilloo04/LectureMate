@@ -1,0 +1,7 @@
+streamlit
+PyMuPDF
+transformers
+keybert
+sentence-transformers
+torch
+pytest
