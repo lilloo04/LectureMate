@@ -14,13 +14,12 @@ python -m pip install -r requirements.txt
 streamlit run app.py
 ```
 
-> 모델 및 패키지 버전은 1주 차 기술 검증 후 확정합니다. 현재는 UI 뼈대만 실행됩니다.
 
 ## 담당
-- A: PDF 텍스트 추출, 키워드
-- B: AI 요약
-- C: 퀴즈 생성
-- D: UI, 통합, 팀 운영
+- 박시현: PDF 텍스트 추출, 키워드, 팀 리더
+- 차준영: AI 요약
+- 심현준: 퀴즈 생성
+- 이주애: UI, 통합, 팀 운영
 
 ## 협업 규칙
 - main에 직접 push하지 않고 기능 브랜치에서 PR 생성
