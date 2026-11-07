@@ -2,10 +2,11 @@
 
 import io
 
-import fitz
 import pytest
 
-from src.pdf_processor import extract_text
+fitz = pytest.importorskip("fitz")
+
+from src.pdf_processor import extract_text  # noqa: E402
 
 
 def make_pdf(pages=("Machine learning lecture",), encrypted=False):
