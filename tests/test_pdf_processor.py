@@ -58,12 +58,24 @@ def test_invalid_type_and_oversized():
     with pytest.raises(ValueError, match="25MB"):
         extract_text(b"x" * (25 * 1024 * 1024 + 1))
 
-class ShortReadStream(io.BytesIO):
-    """Stream that returns fewer bytes than requested."""
+class ShortReadStream:
+    """Stream that returns fewer bytes than requested, without getvalue."""
+
+    def __init__(self, data):
+        """Wrap a BytesIO stream."""
+        self.stream = io.BytesIO(data)
+
+    def seek(self, position):
+        """Set the wrapped stream position."""
+        return self.stream.seek(position)
+
+    def tell(self):
+        """Return the wrapped stream position."""
+        return self.stream.tell()
 
     def read(self, size=-1):
         """Read no more than 97 bytes at once."""
-        return super().read(min(size, 97))
+        return self.stream.read(min(size, 97))
 
 
 class GuardedStream:
