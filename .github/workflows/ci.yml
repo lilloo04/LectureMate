@@ -12,7 +12,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install lightweight test tools
-        run: python -m pip install pytest ruff
+        run: python -m pip install pytest ruff PyMuPDF scikit-learn
       - name: Syntax check
         run: python -m compileall -q app.py src tests
       - name: Lint
