@@ -15,17 +15,29 @@ def _read_pdf_bytes(pdf_file: BinaryIO | bytes) -> bytes:
         return pdf_file
     if hasattr(pdf_file, "getvalue"):
         data = pdf_file.getvalue()
+        if isinstance(data, bytes) and len(data) > _MAX_PDF_BYTES:
+            raise ValueError("PDF 크기는 25MB 이하여야 합니다.")
     elif hasattr(pdf_file, "read"):
         position = pdf_file.tell() if hasattr(pdf_file, "tell") else None
         try:
-            data = pdf_file.read()
+            chunks = []
+            remaining = _MAX_PDF_BYTES + 1
+            while remaining:
+                chunk = pdf_file.read(min(64 * 1024, remaining))
+                if not chunk:
+                    break
+                if not isinstance(chunk, bytes):
+                    raise TypeError("PDF 파일을 바이너리 모드로 읽어 주세요.")
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            data = b"".join(chunks)
         finally:
             if position is not None and hasattr(pdf_file, "seek"):
                 pdf_file.seek(position)
     else:
-        raise ValueError("PDF 파일 또는 PDF 바이트를 전달해 주세요.")
+        raise TypeError("PDF 파일 또는 PDF 바이트를 전달해 주세요.")
     if not isinstance(data, bytes):
-        raise ValueError("PDF 파일을 바이너리 모드로 읽어 주세요.")
+        raise TypeError("PDF 파일을 바이너리 모드로 읽어 주세요.")
     return data
 
 
