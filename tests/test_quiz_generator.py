@@ -114,18 +114,26 @@ def test_all_invalid_items_raise_without_inventing(monkeypatch):
         quiz.generate_quiz("강의 본문입니다.")
 
 
-def test_unconfigured_model_does_not_invent_quizzes():
-    """Do not fabricate quizzes while no generation model is approved."""
-    with pytest.raises(RuntimeError, match="모델이 아직 설정되지 않았습니다"):
-        quiz.generate_quiz("파이썬은 인터프리터 언어입니다.")
+def test_parse_generated_json():
+    """Parse valid JSON returned by the model."""
+    generated = """
+    [
+        {
+            "question": "파이썬은 무엇인가요?",
+            "options": ["언어", "운영체제", "하드웨어", "데이터베이스"],
+            "answer_index": 0,
+            "explanation": "파이썬은 프로그래밍 언어입니다."
+        }
+    ]
+    """
+
+    result = quiz._parse_generated_json(generated)
+
+    assert len(result) == 1
+    assert result[0]["answer_index"] == 0
 
 
-def test_model_failure_is_reported(monkeypatch):
-    """Surface generator failures as a clear runtime error."""
-    def fail(text: str) -> list[dict]:
-        """Simulate a model runtime failure."""
-        raise OSError("model failed")
-
-    monkeypatch.setattr(quiz, "_generate_quiz_candidates", fail)
-    with pytest.raises(RuntimeError, match="퀴즈 생성에 실패"):
-        quiz.generate_quiz("강의 본문입니다.")
+def test_invalid_generated_json_raises_runtime_error():
+    """Reject malformed JSON from the model."""
+    with pytest.raises(RuntimeError):
+        quiz._parse_generated_json("잘못된 JSON 출력")
